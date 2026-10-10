@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TrustLedger – Loans and shared expenses, always clear</title>
+<meta name="description" content="TrustLedger keeps track of who owes whom. Record loans, split group expenses, settle with proof, and keep working even without internet. Free Android app.">
+<meta name="theme-color" content="#6D28D9">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%236D28D9'/%3E%3Cpath d='M18 22h28v6H18zM18 33h20v6H18zM18 44h13v4H18z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#7C3AED; --primary:#6D28D9; --accent-soft:#EDE9FE; --on-accent:#fff;
+  --bg:#F8FAFC; --surface:#fff; --surface2:#F1F5F9; --text:#0F172A; --muted:#475569; --line:#E2E8F0;
+  --red:#DC2626; --red-soft:#FEE2E2; --amber:#B45309; --amber-soft:#FEF3C7; --green:#047857; --green-soft:#D1FAE5; --grey:#475569; --grey-soft:#E2E8F0;
+  --shadow:0 1px 2px rgba(15,23,42,.06),0 12px 32px -12px rgba(15,23,42,.18);
+  --r:20px;
+  --font:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root{ --bg:#0F172A; --surface:#172033; --surface2:#1E293B; --text:#F1F5F9; --muted:#A8B3C5; --line:#2A3650;
+    --accent-soft:#2E1F5C; --red-soft:#4C1D1D; --amber-soft:#4A3510; --green-soft:#064E3B; --grey-soft:#2A3650;
+    --amber:#FBBF24; --green:#34D399; --red:#F87171; --grey:#A8B3C5;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 16px 40px -16px rgba(0,0,0,.6);}
+}
+*{box-sizing:border-box;margin:0}
+html,body{overflow-x:clip}
+html{scroll-behavior:smooth;scroll-padding-top:84px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;
+  padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
+img,svg{max-width:100%}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:8px}
+.wrap{width:min(1140px,100% - 40px);margin-inline:auto}
+.ico{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+h1,h2,h3{line-height:1.15;letter-spacing:-.02em}
+h1{font-size:clamp(2.3rem,5.4vw,4rem);font-weight:800}
+h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800}
+h3{font-size:1.15rem;font-weight:700;letter-spacing:-.01em}
+p{color:var(--muted)}
+section{padding:88px 0}
+.lead{font-size:1.15rem;max-width:56ch}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 24px;border-radius:14px;font:600 1rem var(--font);text-decoration:none;border:1.5px solid transparent;cursor:pointer;transition:transform .15s,box-shadow .2s,background .2s}
+.btn-primary{background:var(--accent);color:var(--on-accent);box-shadow:0 8px 20px -8px var(--accent)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 24px -8px var(--accent)}
+.btn-ghost{border-color:var(--line);background:var(--surface);color:var(--text)}
+.btn-ghost:hover{border-color:var(--accent)}
+.btn:active{transform:scale(.98)}
+
+/* nav */
+header.nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.nav .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.15rem;text-decoration:none}
+.mark{width:36px;height:36px;border-radius:11px;background:linear-gradient(145deg,var(--accent),var(--primary));display:grid;place-items:center;color:#fff}
+.mark svg{width:20px;height:20px}
+.links{display:flex;gap:26px;align-items:center}
+.links a{text-decoration:none;font-weight:600;font-size:.95rem;color:var(--muted)}
+.links a:hover{color:var(--text)}
+.links a.btn-primary,.links a.btn-primary:hover{color:var(--on-accent)}
+.nav .btn{min-height:42px;padding:0 18px;font-size:.92rem}
+@media(max-width:820px){.links a:not(.btn){display:none}}
+
+/* hero */
+.hero{padding:64px 0 40px;position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center}
+.hero h1{margin-bottom:20px}
+.hero .lead{margin-bottom:32px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:22px}
+.meta{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.9rem;color:var(--muted)}
+.meta span{display:inline-flex;align-items:center;gap:8px}
+.meta .ico{width:18px;height:18px;color:var(--accent)}
+.glow{position:absolute;inset:auto -10% -30% auto;width:620px;height:620px;border-radius:50%;background:radial-gradient(circle,var(--accent-soft),transparent 68%);z-index:-1;opacity:.9}
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}.hero{padding-top:36px}}
+
+/* phone */
+.phone{width:100%;max-width:300px;margin-inline:auto;background:#0B1220;border-radius:42px;padding:10px;box-shadow:var(--shadow),0 0 0 1px rgba(255,255,255,.06) inset;position:relative}
+.screen{background:var(--bg);border-radius:33px;overflow:hidden;height:580px;position:relative;font-size:12.5px;color:var(--text)}
+.sb{height:26px;display:flex;justify-content:space-between;align-items:center;padding:0 18px;font-size:10.5px;font-weight:700;color:#fff}
+.hero-card{background:linear-gradient(160deg,var(--accent),var(--primary));color:#fff;padding:0 16px 52px;border-radius:0 0 26px 26px}
+.hero-card .who{display:flex;justify-content:space-between;align-items:center;padding-top:6px;font-size:11.5px;opacity:.92}
+.hero-card .net{font-size:30px;font-weight:800;letter-spacing:-.03em;margin:10px 0 0}
+.hero-card small{opacity:.85;font-size:11px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px;margin-top:-34px}
+.tile{background:var(--surface);border-radius:16px;padding:10px 12px;box-shadow:var(--shadow)}
+.tile b{display:block;font-size:15px;margin-top:2px}
+.tile small{color:var(--muted);font-size:10.5px}
+.tick{width:15px;height:15px;vertical-align:-3px;margin-left:4px;display:inline-block}
+.pos{color:var(--green)} .neg{color:var(--red)}
+.list{padding:12px 14px 90px;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.row{min-width:0;background:var(--surface);border-radius:16px;padding:10px 12px;display:flex;align-items:center;gap:10px;border:1px solid var(--line)}
+.av{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;font-weight:800;color:#fff;font-size:13px;flex:none}
+.row .t{flex:1;min-width:0}
+.row .t b{display:block;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .t small{display:block;color:var(--muted);font-size:10.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amt{font-weight:800;font-size:12.5px;white-space:nowrap}
+.pill{white-space:nowrap;display:inline-block;font-weight:700;font-size:10px;padding:2px 8px;border-radius:999px;margin-top:2px}
+.p-red{background:var(--red-soft);color:var(--red)} .p-amb{background:var(--amber-soft);color:var(--amber)}
+.p-grn{background:var(--green-soft);color:var(--green)} .p-gry{background:var(--grey-soft);color:var(--grey)}
+.dock{position:absolute;left:14px;right:14px;bottom:14px;background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:7px;display:flex;justify-content:space-around;box-shadow:var(--shadow)}
+.dock span{display:flex;align-items:center;gap:6px;padding:8px 12px;border-radius:20px;font-weight:700;font-size:11px;color:var(--muted)}
+.dock span.on{background:var(--accent);color:#fff}
+.dock .ico{width:16px;height:16px}
+.bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:8px 0 4px}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.panel{padding:14px}
+.panel h4{font-size:15px;margin:2px 0 2px}
+.proof{border:1.5px dashed var(--line);border-radius:14px;padding:14px;text-align:center;color:var(--muted);margin:10px 0;font-size:11.5px}
+.fake-btn{background:var(--accent);color:#fff;text-align:center;font-weight:700;padding:11px;border-radius:13px;margin-top:8px}
+
+/* showcase */
+.show{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center}
+.show .tabs{display:grid;gap:12px;margin-top:28px}
+.tab{text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:18px 20px;font:inherit;color:inherit;cursor:pointer;display:flex;gap:14px;transition:border-color .2s,background .2s}
+.tab .ico{color:var(--accent);margin-top:2px}
+.tab b{display:block;font-size:1.02rem}
+.tab span{color:var(--muted);font-size:.93rem;display:block;margin-top:2px}
+.tab[aria-selected="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.screens > div{display:none;height:100%}
+.screens > div.on{display:block;animation:swap .35s ease}
+@keyframes swap{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+@media(max-width:900px){.show{grid-template-columns:1fr}}
+
+/* features bento */
+.sec-head{max-width:640px;margin-bottom:44px}
+.sec-head p{margin-top:14px;font-size:1.08rem}
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:26px;position:relative}
+.card .ico-box{width:46px;height:46px;border-radius:14px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;margin-bottom:16px}
+.card p{margin-top:8px;font-size:.96rem}
+.c-a{grid-column:span 3}.c-b{grid-column:span 3}.c-c{grid-column:span 2}.c-d{grid-column:span 2}.c-e{grid-column:span 2}
+.c-big{background:linear-gradient(160deg,var(--accent),var(--primary));color:#fff;border:0}
+.c-big p{color:rgba(255,255,255,.88)} .c-big .ico-box{background:rgba(255,255,255,.16);color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+@media(max-width:900px){.c-a,.c-b,.c-c,.c-d,.c-e{grid-column:span 6}}
+@media(min-width:620px) and (max-width:900px){.c-c,.c-d{grid-column:span 3}.c-e{grid-column:span 6}}
+
+/* colours */
+.palette{background:var(--surface);border-block:1px solid var(--line)}
+.pal-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.sw{display:flex;flex-wrap:wrap;gap:14px;margin:26px 0}
+.sw button{width:52px;height:52px;border-radius:16px;border:3px solid transparent;cursor:pointer;box-shadow:var(--shadow);transition:transform .15s}
+.sw button:hover{transform:scale(1.07)}
+.sw button[aria-pressed="true"]{border-color:var(--text)}
+@media(max-width:900px){.pal-grid{grid-template-columns:1fr}}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;counter-reset:s}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:24px;counter-increment:s}
+.step::before{content:counter(s);display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--accent);color:#fff;font-weight:800;margin-bottom:14px}
+.step p{margin-top:8px;font-size:.95rem}
+@media(max-width:900px){.steps{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.steps{grid-template-columns:1fr}}
+.note{margin-top:22px;background:var(--amber-soft);border-radius:16px;padding:16px 20px;color:var(--text);display:flex;gap:12px}
+.note .ico{color:var(--amber)}
+.note p{color:var(--text);font-size:.95rem}
+
+/* faq */
+.faq{max-width:780px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:0 22px;margin-bottom:12px}
+summary{min-height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;font-weight:700;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.5rem;color:var(--accent);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{padding:0 0 20px}
+
+/* final */
+.final{background:linear-gradient(160deg,var(--accent),var(--primary));color:#fff;border-radius:32px;padding:64px 32px;text-align:center}
+.final p{color:rgba(255,255,255,.9);max-width:52ch;margin:14px auto 28px;font-size:1.08rem}
+.final .btn-primary{background:#fff;color:var(--primary);box-shadow:none}
+.final .small{font-size:.88rem;margin:18px 0 0;opacity:.85}
+footer{padding:48px 0 calc(48px + env(safe-area-inset-bottom));border-top:1px solid var(--line);margin-top:88px}
+footer .wrap{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:center}
+footer nav{display:flex;gap:22px;flex-wrap:wrap}
+footer a{color:var(--muted);text-decoration:none;font-weight:600;font-size:.93rem}
+footer a:hover{color:var(--text)}
+footer small{color:var(--muted)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-seal" viewBox="0 0 24 24"><path fill="#DC2626" stroke="#fff" stroke-width="1" d="M12 1.5l2.4 1.9 3-.5 1.1 2.8 2.8 1.1-.5 3L22.5 12l-1.9 2.4.5 3-2.8 1.1-1.1 2.8-3-.5L12 22.5l-2.4-1.9-3 .5-1.1-2.8-2.8-1.1.5-3L1.5 12l1.9-2.4-.5-3 2.8-1.1 1.1-2.8 3 .5z"/><path fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m8 12.2 2.8 2.8L16 9.5"/></symbol>
+  <symbol id="i-ledger" viewBox="0 0 24 24"><path d="M5 5h14M5 12h10M5 19h6"/></symbol>
+  <symbol id="i-split" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v9l6.4 6.4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-offline" viewBox="0 0 24 24"><path d="M2 8.8a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01M3 3l18 18"/></symbol>
+  <symbol id="i-sync" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2M3 12A9 9 0 0 1 18.5 5.8M18 2v4h-4M6 22v-4h4"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9.5 4.6-1.1 8-4.5 8-9.5V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-1 1.6-2-.5-1.3.3-2.5 1.6-2.5H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1"/><circle cx="10.5" cy="7" r="1"/><circle cx="15.5" cy="8" r="1"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 8 3 8H3s3-1 3-8M10.3 20a2 2 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 20h16"/></symbol>
+  <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14a6.5 6.5 0 0 1 3.5 6"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+  <symbol id="i-img" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5-5-9 9"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v5h1"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+</svg>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="TrustLedger home"><span class="mark"><svg class="ico" style="stroke:#fff"><use href="#i-ledger"/></svg></span>TrustLedger</a>
+    <nav class="links" aria-label="Main">
+      <a href="#screens">The app</a><a href="#features">Features</a><a href="#install">Install</a><a href="#faq">Questions</a>
+      <a class="btn btn-primary" data-apk href="#download"><svg class="ico"><use href="#i-down"/></svg>Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <h1>Know exactly who owes whom.</h1>
+      <p class="lead">TrustLedger keeps every loan and shared expense between friends in one clear place. Lend, split a bill, settle with proof, and stay in sync, even when your signal isn't.</p>
+      <div class="cta">
+        <a class="btn btn-primary" data-apk href="#download"><svg class="ico"><use href="#i-down"/></svg>Download for Android</a>
+        <a class="btn btn-ghost" href="#screens">See how it works</a>
+      </div>
+      <div class="meta">
+        <span><svg class="ico"><use href="#i-check"/></svg>Free</span>
+        <span><svg class="ico"><use href="#i-check"/></svg>Works offline</span>
+        <span><svg class="ico"><use href="#i-check"/></svg>Rs (PKR) and Pakistan time</span>
+        <span id="verLine"><svg class="ico"><use href="#i-check"/></svg>Android 7.0 and up</span>
+      </div>
+    </div>
+    <div aria-hidden="true">
+      <div class="phone"><div class="screen">
+        <div class="hero-card">
+          <div class="sb"><span>9:41</span><span>Online</span></div>
+          <div class="who"><span>Signed in as ali<svg class="tick" role="img" aria-label="Verified developer"><use href="#i-seal"/></svg></span><span>Sync: just now</span></div>
+          <div class="net pos" style="color:#fff">+Rs 4,250</div><small>Your balance</small>
+        </div>
+        <div class="tiles">
+          <div class="tile"><small>To receive</small><b class="pos">Rs 6,500</b></div>
+          <div class="tile"><small>To pay</small><b class="neg">Rs 2,250</b></div>
+        </div>
+        <div class="list">
+          <div class="row"><div class="av" style="background:#047857">A</div><div class="t"><b>Azhar</b><small>Lunch money</small></div><div style="text-align:right"><div class="amt pos">+Rs 2,500</div><span class="pill p-red">PENDING</span></div></div>
+          <div class="row"><div class="av" style="background:#B45309">AB</div><div class="t"><b>Arslan Bajwa</b><small>Mess bill share</small></div><div style="text-align:right"><div class="amt neg">−Rs 1,250</div><span class="pill p-amb">AWAITING</span></div></div>
+          <div class="row"><div class="av" style="background:#1D4ED8">Z</div><div class="t"><b>Zohaib</b><small>Book fund</small></div><div style="text-align:right"><div class="amt pos">+Rs 4,000</div><span class="pill p-red">PENDING</span></div></div>
+          <div class="row"><div class="av" style="background:#7C3AED">AS</div><div class="t"><b>Ali Sher</b><small>Settled yesterday</small></div><div style="text-align:right"><div class="amt" style="color:var(--muted)">Rs 800</div><span class="pill p-grn">SETTLED</span></div></div>
+        </div>
+        <div class="dock"><span class="on"><svg class="ico"><use href="#i-home"/></svg>Home</span><span><svg class="ico"><use href="#i-user"/></svg>Profile</span></div>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<section id="screens">
+  <div class="wrap show">
+    <div>
+      <h2>From “I'll pay you back” to settled, in three taps.</h2>
+      <p class="lead" style="margin-top:14px">Pick a part of the app to see how it looks.</p>
+      <div class="tabs" role="tablist" aria-label="App screens">
+        <button class="tab" role="tab" aria-selected="true" data-t="0"><svg class="ico"><use href="#i-ledger"/></svg><div><b>Loans</b><span>Every loan with a clear status and a signed amount, so you never guess who owes whom.</span></div></button>
+        <button class="tab" role="tab" aria-selected="false" data-t="1"><svg class="ico"><use href="#i-split"/></svg><div><b>Group splits</b><span>Split a bill equally or by exact amounts. Everyone's share and progress is visible.</span></div></button>
+        <button class="tab" role="tab" aria-selected="false" data-t="2"><svg class="ico"><use href="#i-check"/></svg><div><b>Settle with proof</b><span>Ask to settle, attach a payment photo, and the lender approves with one tap.</span></div></button>
+      </div>
+    </div>
+    <div class="screens" aria-live="polite">
+      <div class="on"><div class="phone"><div class="screen">
+        <div class="sb" style="color:var(--text)"><span>9:41</span><span></span></div>
+        <div class="panel"><h4>Loans</h4><small style="color:var(--muted)">My pending · 3</small></div>
+        <div class="list" style="padding-top:0">
+          <div class="row"><div class="av" style="background:#047857">A</div><div class="t"><b>Azhar</b><small>Owes you · Lunch money</small></div><div style="text-align:right"><div class="amt pos">+Rs 2,500</div><span class="pill p-red">PENDING</span></div></div>
+          <div class="row"><div class="av" style="background:#B45309">AB</div><div class="t"><b>Arslan Bajwa</b><small>You owe · Mess bill</small></div><div style="text-align:right"><div class="amt neg">−Rs 1,250</div><span class="pill p-amb">AWAITING</span></div></div>
+          <div class="row"><div class="av" style="background:#1D4ED8">Z</div><div class="t"><b>Zohaib</b><small>Owes you · Book fund</small></div><div style="text-align:right"><div class="amt pos">+Rs 4,000</div><span class="pill p-red">PENDING</span></div></div>
+          <div class="row"><div class="av" style="background:#7C3AED">AS</div><div class="t"><b>Ali Sher</b><small>Phone charger</small></div><div style="text-align:right"><div class="amt" style="color:var(--muted)">Rs 800</div><span class="pill p-grn">SETTLED</span></div></div>
+          <div class="row"><div class="av" style="background:#475569">A</div><div class="t"><b>Abubakar</b><small>Cancelled</small></div><div style="text-align:right"><div class="amt" style="color:var(--muted)">Rs 300</div><span class="pill p-gry">REJECTED</span></div></div>
+        </div>
+        <div class="dock"><span class="on"><svg class="ico"><use href="#i-home"/></svg>Home</span><span><svg class="ico"><use href="#i-user"/></svg>Profile</span></div>
+      </div></div></div>
+
+      <div><div class="phone"><div class="screen">
+        <div class="sb" style="color:var(--text)"><span>9:41</span><span></span></div>
+        <div class="panel">
+          <h4>Weekend trip</h4><small style="color:var(--muted)">Created by you · Equal split</small>
+          <div style="font-size:26px;font-weight:800;margin:12px 0 0">Rs 12,000</div>
+          <div class="bar"><i style="width:50%"></i></div><small style="color:var(--muted)">Rs 6,000 of Rs 12,000 collected</small>
+        </div>
+        <div class="list" style="padding-top:0">
+          <div class="row"><div class="av" style="background:#047857">A</div><div class="t"><b>Azhar</b><small>Share Rs 3,000</small></div><span class="pill p-grn">PAID</span></div>
+          <div class="row"><div class="av" style="background:#1D4ED8">Z</div><div class="t"><b>Zohaib</b><small>Share Rs 3,000</small></div><span class="pill p-grn">PAID</span></div>
+          <div class="row"><div class="av" style="background:#B45309">AB</div><div class="t"><b>Arslan Bajwa</b><small>Share Rs 3,000</small></div><span class="pill p-amb">AWAITING</span></div>
+          <div class="row"><div class="av" style="background:#7C3AED">AS</div><div class="t"><b>Ali Sher</b><small>Share Rs 3,000</small></div><span class="pill p-red">PENDING</span></div>
+        </div>
+        <div class="dock"><span class="on"><svg class="ico"><use href="#i-home"/></svg>Home</span><span><svg class="ico"><use href="#i-user"/></svg>Profile</span></div>
+      </div></div></div>
+
+      <div><div class="phone"><div class="screen">
+        <div class="sb" style="color:var(--text)"><span>9:41</span><span></span></div>
+        <div class="panel">
+          <h4>Request settlement</h4><small style="color:var(--muted)">Mess bill share · Arslan Bajwa</small>
+          <div style="font-size:26px;font-weight:800;margin:12px 0" class="neg">−Rs 1,250</div>
+          <div class="proof"><svg class="ico" style="margin:0 auto 6px;display:block"><use href="#i-img"/></svg>Payment screenshot attached</div>
+          <div class="fake-btn">Send request</div>
+          <div style="margin-top:16px;background:var(--amber-soft);border-radius:14px;padding:12px"><b style="color:var(--amber)">Awaiting approval</b><br><small style="color:var(--muted)">Arslan Bajwa will review your proof and confirm.</small></div>
+        </div>
+        <div class="dock"><span class="on"><svg class="ico"><use href="#i-home"/></svg>Home</span><span><svg class="ico"><use href="#i-user"/></svg>Profile</span></div>
+      </div></div></div>
+    </div>
+  </div>
+</section>
+
+<section id="features" style="padding-top:24px">
+  <div class="wrap">
+    <div class="sec-head"><h2>Built for money between people who trust each other.</h2><p>Simple on the surface. Careful underneath.</p></div>
+    <div class="bento">
+      <div class="card c-a c-big"><div class="ico-box"><svg class="ico"><use href="#i-offline"/></svg></div><h3>Works without internet</h3><p>Add a loan on a weak connection or none at all. TrustLedger saves it on your phone and uploads it automatically when your signal returns. Nothing is lost, nothing is entered twice.</p></div>
+      <div class="card c-b"><div class="ico-box"><svg class="ico"><use href="#i-sync"/></svg></div><h3>Syncs on its own</h3><p>Everyone sees the same numbers. Sync runs automatically while the app is open, and the status strip shows whether you're online and what's still waiting to upload.</p></div>
+      <div class="card c-c"><div class="ico-box"><svg class="ico"><use href="#i-split"/></svg></div><h3>Fair group splits</h3><p>Equal splits are exact to the paisa, so shares always add up to the total. Prefer custom amounts? Enter them and the app checks the sum.</p></div>
+      <div class="card c-d"><div class="ico-box"><svg class="ico"><use href="#i-img"/></svg></div><h3>Proof of payment</h3><p>Attach a screenshot when you ask to settle. The lender approves or denies, and the history stays on record.</p></div>
+      <div class="card c-e"><div class="ico-box"><svg class="ico"><use href="#i-check"/></svg></div><h3>Settle everything at once</h3><p>See all loans and split shares with one person, check the total, and clear them together.</p></div>
+      <div class="card c-c"><div class="ico-box"><svg class="ico"><use href="#i-shield"/></svg></div><h3>Checked on the server</h3><p>Amounts, people and permissions are verified by the server, never trusted blindly from a phone.</p></div>
+      <div class="card c-d"><div class="ico-box"><svg class="ico"><use href="#i-bell"/></svg></div><h3>Announcements</h3><p>Important notices appear as a clear card on your home screen, with an inbox to read them later.</p></div>
+      <div class="card c-e"><div class="ico-box"><svg class="ico"><use href="#i-lock"/></svg></div><h3>Private or public</h3><p>Choose who can see each loan. Personal loans stay between the two of you.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="palette">
+  <div class="wrap pal-grid">
+    <div>
+      <h2>Make it yours.</h2>
+      <p class="lead" style="margin-top:14px">Nine accent colours, light and dark themes, and a choice of app icons. Tap a colour to preview it on this page.</p>
+      <div class="sw" id="sw" role="group" aria-label="Accent colour preview"></div>
+      <a class="btn btn-primary" data-apk href="#download"><svg class="ico"><use href="#i-down"/></svg>Get TrustLedger</a>
+    </div>
+    <div aria-hidden="true">
+      <div class="card" style="box-shadow:var(--shadow)">
+        <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px"><div class="av" style="background:var(--accent);width:52px;height:52px;border-radius:16px;font-size:20px">A</div><div><b style="font-size:1.1rem">Ali<svg class="tick" role="img" aria-label="Verified developer"><use href="#i-seal"/></svg></b><br><small style="color:var(--muted)">Signed in</small></div></div>
+        <div class="row" style="margin-bottom:10px"><div class="t"><b>Theme</b><small>Light · Dark · System</small></div><span class="pill p-grn" style="background:var(--accent-soft);color:var(--accent)">Light</span></div>
+        <div class="row" style="margin-bottom:10px"><div class="t"><b>Accent colour</b><small>Buttons, tabs and highlights</small></div><span class="av" style="background:var(--accent);width:26px;height:26px;border-radius:9px"></span></div>
+        <div class="row"><div class="t"><b>Notifications</b><small>Announcements from the team</small></div><span class="pill" style="background:var(--accent);color:#fff">On</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="wrap">
+    <div class="sec-head"><h2>Install in under a minute.</h2><p>TrustLedger is shared directly as an APK file, so Android asks you to allow the install once.</p></div>
+    <div class="steps">
+      <div class="step"><h3>Download</h3><p>Tap the download button and save <b>TrustLedger.apk</b> to your phone.</p></div>
+      <div class="step"><h3>Open the file</h3><p>Open it from your notifications or the Downloads folder.</p></div>
+      <div class="step"><h3>Allow the install</h3><p>If Android asks, allow your browser or file manager to install apps, then go back and tap Install.</p></div>
+      <div class="step"><h3>Create your account</h3><p>Open TrustLedger, sign up, add your email, and invite your friends.</p></div>
+    </div>
+    <div class="note"><svg class="ico"><use href="#i-info"/></svg><p>Google Play Protect may show a notice because the app isn't from the Play Store. Choose <b>Install anyway</b> to continue. Later updates are delivered inside the app.</p></div>
+  </div>
+</section>
+
+<section id="faq" style="padding-top:24px">
+  <div class="wrap">
+    <div class="sec-head"><h2>Questions, answered.</h2></div>
+    <div class="faq">
+      <details><summary>Is TrustLedger free?</summary><p>Yes. There are no fees and no ads.</p></details>
+      <details><summary>Does it move real money?</summary><p>No. TrustLedger is a record-keeper. You pay each other the way you already do, then mark the loan as settled in the app.</p></details>
+      <details><summary>What happens if I have no internet?</summary><p>You can keep recording loans and splits. They're saved on your phone and uploaded automatically once you're online.</p></details>
+      <details><summary>How do updates work?</summary><p>When a new version is available the app tells you and updates from inside the app. Your data stays safe, and you never need to come back to this page.</p></details>
+      <details><summary>Can other people see my loans?</summary><p>Only what you choose to share. Personal loans are visible to you and the other person. Public ones are visible to the group.</p></details>
+      <details><summary>Which phones are supported?</summary><p>Android 7.0 and newer.</p></details>
+      <details><summary>Something isn't working. Who do I tell?</summary><p>Use <b>Report a problem</b> inside the app, or email <a href="mailto:muhammadali.cpp@gmail.com" style="color:var(--accent);font-weight:600">muhammadali.cpp@gmail.com</a>.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="download" style="padding-top:24px">
+  <div class="wrap">
+    <div class="final">
+      <h2>Keep every rupee between friends clear.</h2>
+      <p>Download TrustLedger and start your first ledger today.</p>
+      <a class="btn btn-primary" data-apk href="#download"><svg class="ico"><use href="#i-down"/></svg>Download TrustLedger.apk</a>
+      <p class="small" id="dlMeta">Android 7.0 and up</p>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="brand" href="#top"><span class="mark"><svg class="ico" style="stroke:#fff"><use href="#i-ledger"/></svg></span>TrustLedger</a>
+    <nav aria-label="Footer"><a href="privacy.html">Privacy policy</a><a href="mailto:muhammadali.cpp@gmail.com">Contact</a><a href="https://www.linkedin.com/in/muhammad-ali-b5117641a" rel="noopener">Developer</a></nav>
+    <small>© <span id="yr"></span> TrustLedger. Made by Muhammad Ali.</small>
+  </div>
+</footer>
+
+<script>
+/* ====== EDIT ONLY THIS BLOCK ====== */
+var CONFIG = {
+  apkUrl:  "https://github.com/muhammadali-cpp/trustledger/releases/latest/download/TrustLedger.apk",
+  version: "1.0",
+  size:    ""          // for example "8 MB" – leave empty to hide
+};
+/* ================================== */
+document.querySelectorAll("[data-apk]").forEach(function(a){ a.href = CONFIG.apkUrl; a.setAttribute("download",""); });
+var meta = "Version " + CONFIG.version + (CONFIG.size ? " · " + CONFIG.size : "") + " · Android 7.0 and up";
+document.getElementById("dlMeta").textContent = meta;
+document.getElementById("verLine").lastChild.textContent = "Version " + CONFIG.version + " · Android 7.0+";
+document.getElementById("yr").textContent = new Date().getFullYear();
+
+/* screen tabs */
+var tabs = document.querySelectorAll(".tab"), panes = document.querySelectorAll(".screens > div");
+tabs.forEach(function(t){ t.addEventListener("click", function(){
+  var n = +t.dataset.t;
+  tabs.forEach(function(x,i){ x.setAttribute("aria-selected", i===n); });
+  panes.forEach(function(p,i){ p.classList.toggle("on", i===n); });
+});});
+
+/* accent preview */
+var cols = [["#7C3AED","#6D28D9","#EDE9FE"],["#047857","#065F46","#D1FAE5"],["#0369A1","#075985","#E0F2FE"],["#4338CA","#3730A3","#E0E7FF"],["#BE185D","#9D174D","#FCE7F3"],["#B45309","#92400E","#FEF3C7"],["#0F766E","#115E59","#CCFBF1"],["#475569","#334155","#E2E8F0"],["#B91C1C","#991B1B","#FEE2E2"]];
+var sw = document.getElementById("sw"), root = document.documentElement.style;
+cols.forEach(function(c,i){
+  var b = document.createElement("button"); b.style.background = c[0]; b.setAttribute("aria-label","Accent colour "+(i+1)); b.setAttribute("aria-pressed", i===0);
+  b.addEventListener("click", function(){
+    root.setProperty("--accent",c[0]); root.setProperty("--primary",c[1]);
+    if(!matchMedia("(prefers-color-scheme: dark)").matches) root.setProperty("--accent-soft",c[2]);
+    sw.querySelectorAll("button").forEach(function(x){ x.setAttribute("aria-pressed", x===b); });
+  });
+  sw.appendChild(b);
+});
+</script>
+</body>
+</html>
